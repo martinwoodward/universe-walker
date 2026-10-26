@@ -120,7 +120,9 @@ class ServerTests(unittest.TestCase):
         status = json.load(urllib.request.urlopen(base + "/status"))
         self.assertEqual(status["badges"][0]["wearer"], "Martin")
         self.assertIn(b"live.js", urllib.request.urlopen(base + "/").read())
-        self.assertIn(b"function paint", urllib.request.urlopen(base + "/design-jig/walking/fresh/directions.js").read())
+        script = urllib.request.urlopen(base + "/design-jig/walking/fresh/directions.js")
+        self.assertIn(b"function paint", script.read())
+        self.assertEqual(script.headers["Cache-Control"], "no-cache")
         with self.assertRaises(urllib.error.HTTPError):
             urllib.request.urlopen(base + "/badge/apps/walking/__init__.py")
 

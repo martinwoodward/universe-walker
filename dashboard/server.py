@@ -153,6 +153,13 @@ class Handler(SimpleHTTPRequestHandler):
         else:
             self.send_error(404)
 
+    def end_headers(self):
+        # Without this, browsers such as Edge reuse stale renderer scripts
+        # heuristically and draw the scene at the wrong scale.
+        if self.path.split("?", 1)[0].startswith(STATIC):
+            self.send_header("Cache-Control", "no-cache")
+        super().end_headers()
+
     def send_json(self, value):
         body = json.dumps(value).encode()
         self.send_response(200)
