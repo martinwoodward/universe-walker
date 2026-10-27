@@ -100,9 +100,9 @@ running (it opens automatically after the splash on our demo badges). The page
 updates about twice a second; reloading it picks up dashboard code changes
 without restarting the server.
 
-Maggie's badge starts alone in the centre; Martin's flies in from the side
-when it is first heard. Press **1** for just Maggie (Martin then returns on
-**2**, or after being out of range for 10 s) and **2** for both. While the
+Maggie's badge starts alone in the centre, even when Martin's is heard. Press
+**2** to fly Martin's in from the side and **1** to return to just Maggie;
+the page never switches by itself. While the
 badges pair, the screens draw together with a linking animation. A confirmed
 sync shows the same total on both screens and a full-window confetti burst.
 Outside a sync, a badge greys out after 10 s without an advert.
