@@ -7,7 +7,7 @@ const SETTINGS = { goal: 10000, direction: "horizon", world: "coast", landmark: 
   sky: "gradient", big: 70, small: 14, title: 29, trail: 12, scale: 1, gap: 24, partnerAlpha: 0.55,
   stride: 0.4, holdProgress: 0.65, mapStyle: "paper" };
 const STALE_S = 10;
-// Maggie's badge is always on screen; any other badge flies in when heard.
+// Maggie's badge is always on screen; other badges only fly in when 2 is pressed.
 const HOST = Object.keys(WEARERS)[0];
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -27,7 +27,7 @@ function card(id) {
   const shown = id === HOST;
   if (!shown) el.classList.add("away");
   const c = { id, name, el, canvas: el.querySelector("canvas"), text: el.querySelector(".text"), model: tracker(), status: null,
-    shown, held: false, motion: null };
+    shown, motion: null };
   cards.set(id, c);
   const order = [...cards.values()].sort((a, b) => rank(a.id) - rank(b.id) || a.id.localeCompare(b.id));
   order.forEach((x, i) => { root.append(x.el); if (i === 0) root.append(link); });
@@ -50,7 +50,6 @@ function layout(change) {
 
 function arrive(c) {
   if (c.shown) return;
-  c.held = false;
   if (c.motion) c.motion.cancel();
   layout(() => { c.shown = true; c.el.classList.remove("away"); });
   if (REDUCED.matches) return;
@@ -63,7 +62,6 @@ function arrive(c) {
 }
 
 function leave(c) {
-  c.held = true;
   if (!c.shown) return;
   c.shown = false;
   if (c.motion) c.motion.cancel();
@@ -177,11 +175,7 @@ events.onmessage = e => {
   scanner(snap.scanner);
   if (pair.observe(snap.badges, Date.now())) confetti.burst();
   for (const b of snap.badges) {
-    const c = card(b.id), fresh = snap.now - b.seen <= STALE_S;
-    c.status = b;
-    // After pressing 1, a guest returns by itself only once it has been away.
-    if (!fresh) c.held = false;
-    else if (c.id !== HOST && !c.held) arrive(c);
+    card(b.id).status = b;
   }
 };
 events.onerror = () => { errorLine.textContent = "Lost the dashboard server, retrying…"; errorLine.hidden = false; };
